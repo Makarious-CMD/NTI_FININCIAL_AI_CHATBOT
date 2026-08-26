@@ -50,24 +50,43 @@ def handle_submit():
         c_data = st.session_state.context_url_input
         
     # ------------- التعديل هنا للصور وملفات الوورد -------------
-    elif c_type == "Image":
+import os
+
+# 1. نحدد مسار الفولدر المخصص بتاعك (حرف الـ r قبل النص بيمنع أي مشاكل في المسار)
+custom_folder = r"D:\NTI_Course\NTI_Graduation"
+
+# نتأكد إن الفولدر ده موجود أصلاً، ولو مش موجود بايثون هيكريته لوحده
+os.makedirs(custom_folder, exist_ok=True)
+elif c_type == "Image":
         file = st.session_state.get(f"img_{st.session_state.file_uploader_key}")
         if file:
-            # استخراج امتداد الصورة الأصلي (مثال: jpg, png)
-            file_extension = file.name.split(".")[-1]
-            # إنشاء ملف مؤقت وحفظ الصورة فيه
-            with tempfile.NamedTemporaryFile(delete=False, suffix=f".{file_extension}") as tmp_file:
-                tmp_file.write(file.getvalue())
-                c_data = tmp_file.name # استخراج المسار الآمن
-                c_data = tmp_file.name.replace("\\", "/")
-    elif c_type == "Document":
+            # ناخد اسم الملف الأصلي (مثلاً: my_picture.jpg)
+            original_filename = file.name
+            
+            # ندمج مسار الفولدر مع اسم الملف
+            full_path = os.path.join(custom_folder, original_filename)
+            
+            # نحفظ الملف في المسار ده
+            with open(full_path, "wb") as f:
+                f.write(file.getvalue())
+                
+            # نجهز المسار ونعدل الـ slashes عشان ميعملش مشاكل
+            c_data = full_path.replace("\\", "/")
+elif c_type == "Document":
         file = st.session_state.get(f"doc_{st.session_state.file_uploader_key}")
         if file:
-            # إنشاء ملف مؤقت وحفظ ملف الوورد فيه
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp_file:
-                tmp_file.write(file.getvalue())
-                c_data = tmp_file.name # استخراج المسار الآمن
-                c_data = tmp_file.name.replace("\\", "/")
+            # ناخد اسم الملف الأصلي (مثلاً: my_file.docx)
+            original_filename = file.name
+            
+            # ندمج مسار الفولدر مع اسم الملف
+            full_path = os.path.join(custom_folder, original_filename)
+            
+            # نحفظ الملف في المسار ده
+            with open(full_path, "wb") as f:
+                f.write(file.getvalue())
+                
+            # نجهز المسار ونعدل الـ slashes
+            c_data = full_path.replace("\\", "/")
     # -------------------------------------------------------------
     
     st.session_state.final_c_data = c_data
