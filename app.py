@@ -2,13 +2,8 @@ import streamlit as st
 from gradio_client import Client
 import os
 import tempfile # <-- تمت الإضافة هنا
+import base64
 
-
-# 1. نحدد مسار الفولدر المخصص بتاعك (حرف الـ r قبل النص بيمنع أي مشاكل في المسار)
-custom_folder = r"D:\NTI_Course\NTI_Graduation"
-
-# نتأكد إن الفولدر ده موجود أصلاً، ولو مش موجود بايثون هيكريته لوحده
-os.makedirs(custom_folder, exist_ok=True)
 
 # 1. Page Config
 st.set_page_config(page_title="AI Financial Educator ChatBot", page_icon="💬", layout="centered")
@@ -57,37 +52,26 @@ def handle_submit():
         c_data = st.session_state.context_url_input
         
 # ------------- التعديل هنا للصور وملفات الوورد -------------
+
     elif c_type == "Image":
         file = st.session_state.get(f"img_{st.session_state.file_uploader_key}")
         if file:
-            # ناخد اسم الملف الأصلي (مثلاً: my_picture.jpg)
-            original_filename = file.name
+            # 1. قراءة محتوى الصورة كـ Bytes
+            file_bytes = file.getvalue()
             
-            # ندمج مسار الفولدر مع اسم الملف
-            full_path = os.path.join(custom_folder, original_filename)
+            # 2. تحويل البايتات لـ Base64 String
+            base64_string = base64.b64encode(file_bytes).decode('utf-8')
             
-            # نحفظ الملف في المسار ده
-            with open(full_path, "wb") as f:
-                f.write(file.getvalue())
-                
-            # نجهز المسار ونعدل الـ slashes عشان ميعملش مشاكل
-            c_data = full_path.replace("\\", "/") 
-                
+            # 3. تخزين الـ String في c_data عشان يتبعت للـ API
+            c_data = base64_string 
+                    
     elif c_type == "Document":
         file = st.session_state.get(f"doc_{st.session_state.file_uploader_key}")
         if file:
-            # ناخد اسم الملف الأصلي (مثلاً: my_file.docx)
-            original_filename = file.name
-            
-            # ندمج مسار الفولدر مع اسم الملف
-            full_path = os.path.join(custom_folder, original_filename)
-            
-            # نحفظ الملف في المسار ده
-            with open(full_path, "wb") as f:
-                f.write(file.getvalue())
-                
-            # نجهز المسار ونعدل الـ slashes
-            c_data = full_path.replace("\\", "/") 
+            # نفس الفكرة هنطبقها على ملفات الوورد لو هتبعتها للـ API برضه
+            file_bytes = file.getvalue()
+            base64_string = base64.b64encode(file_bytes).decode('utf-8')
+            c_data = base64_string
     # -------------------------------------------------------------
     
     st.session_state.final_c_data = c_data
