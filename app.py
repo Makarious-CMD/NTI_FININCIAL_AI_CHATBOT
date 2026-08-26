@@ -3,6 +3,13 @@ from gradio_client import Client
 import os
 import tempfile # <-- تمت الإضافة هنا
 
+
+# 1. نحدد مسار الفولدر المخصص بتاعك (حرف الـ r قبل النص بيمنع أي مشاكل في المسار)
+custom_folder = r"D:\NTI_Course\NTI_Graduation"
+
+# نتأكد إن الفولدر ده موجود أصلاً، ولو مش موجود بايثون هيكريته لوحده
+os.makedirs(custom_folder, exist_ok=True)
+
 # 1. Page Config
 st.set_page_config(page_title="AI Financial Educator ChatBot", page_icon="💬", layout="centered")
 
@@ -49,15 +56,8 @@ def handle_submit():
     elif c_type == "URL":
         c_data = st.session_state.context_url_input
         
-    # ------------- التعديل هنا للصور وملفات الوورد -------------
-import os
-
-# 1. نحدد مسار الفولدر المخصص بتاعك (حرف الـ r قبل النص بيمنع أي مشاكل في المسار)
-custom_folder = r"D:\NTI_Course\NTI_Graduation"
-
-# نتأكد إن الفولدر ده موجود أصلاً، ولو مش موجود بايثون هيكريته لوحده
-os.makedirs(custom_folder, exist_ok=True)
-elif c_type == "Image":
+# ------------- التعديل هنا للصور وملفات الوورد -------------
+    elif c_type == "Image":
         file = st.session_state.get(f"img_{st.session_state.file_uploader_key}")
         if file:
             # ناخد اسم الملف الأصلي (مثلاً: my_picture.jpg)
@@ -71,8 +71,9 @@ elif c_type == "Image":
                 f.write(file.getvalue())
                 
             # نجهز المسار ونعدل الـ slashes عشان ميعملش مشاكل
-            c_data = full_path.replace("\\", "/")
-elif c_type == "Document":
+            c_data = full_path.replace("\\", "/") 
+                
+    elif c_type == "Document":
         file = st.session_state.get(f"doc_{st.session_state.file_uploader_key}")
         if file:
             # ناخد اسم الملف الأصلي (مثلاً: my_file.docx)
@@ -86,7 +87,7 @@ elif c_type == "Document":
                 f.write(file.getvalue())
                 
             # نجهز المسار ونعدل الـ slashes
-            c_data = full_path.replace("\\", "/")
+            c_data = full_path.replace("\\", "/") 
     # -------------------------------------------------------------
     
     st.session_state.final_c_data = c_data
