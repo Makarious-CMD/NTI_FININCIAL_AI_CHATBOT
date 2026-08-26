@@ -59,7 +59,7 @@ def handle_submit():
             with tempfile.NamedTemporaryFile(delete=False, suffix=f".{file_extension}") as tmp_file:
                 tmp_file.write(file.getvalue())
                 c_data = tmp_file.name # استخراج المسار الآمن
-                
+                c_data = tmp_file.name.replace("\\", "/")
     elif c_type == "Document":
         file = st.session_state.get(f"doc_{st.session_state.file_uploader_key}")
         if file:
@@ -67,6 +67,7 @@ def handle_submit():
             with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp_file:
                 tmp_file.write(file.getvalue())
                 c_data = tmp_file.name # استخراج المسار الآمن
+                c_data = tmp_file.name.replace("\\", "/")
     # -------------------------------------------------------------
     
     st.session_state.final_c_data = c_data
