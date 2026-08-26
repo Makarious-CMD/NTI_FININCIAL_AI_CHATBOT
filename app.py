@@ -105,9 +105,8 @@ if st.session_state.pending_submission:
     with st.chat_message("assistant"):
         with st.spinner("🧠 AI is thinking..."):
             try:
-                GRADIO_URL = os.environ.get("GRADIO_API_URL", "http://127.0.0.1:7867")
 
-                client = Client(GRADIO_URL)
+                client = Client("https://a535215d7f410e3791.gradio.live")
                 final_answer = client.predict(
                     input1=user_query,
                     input2=context_data if context_data else "", 
